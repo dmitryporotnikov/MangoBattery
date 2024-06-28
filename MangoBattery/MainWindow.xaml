@@ -1,0 +1,34 @@
+﻿<Window x:Class="MangoBattery.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="MangoBattery" Height="538" Width="303"
+        Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" ResizeMode="NoResize">
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock x:Name="txtMachineName" FontWeight="Bold"/>
+            <TextBlock x:Name="txtCurrentTime" Margin="0,0,0,10"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1">
+            <ui:TextBlock x:Name="txtBatteryInfo" TextWrapping="Wrap"/>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Margin="0,10,0,0">
+            <ui:TextBlock Text="Current Charge:" FontWeight="Bold"/>
+            <ProgressBar x:Name="progressBarCurrentCharge" Height="20" Maximum="100" Foreground="#FF1CCF34"/>
+            <ui:TextBlock x:Name="txtCurrentChargePercentage" HorizontalAlignment="Center"/>
+
+            <ui:TextBlock Text="Battery Health:" FontWeight="Bold"/>
+            <ProgressBar x:Name="progressBarHealth" Height="20" Maximum="100" Foreground="#FF1CCF34"/>
+            <ui:TextBlock x:Name="txtHealthPercentage" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Window>
