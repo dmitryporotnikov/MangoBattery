@@ -59,3 +59,6 @@ StyleCopReport.xml
 *.appxblockmap
 *.appxsignature
 *.appxupload
+
+# Mac OS files
+*.DS_Store

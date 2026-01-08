@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Management;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MangoBattery
@@ -13,125 +12,117 @@ namespace MangoBattery
     public partial class MainWindow : Window
     {
         private DispatcherTimer updateTimer;
+        private BatteryService _batteryService;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            _batteryService = new BatteryService();
+
             updateTimer = new DispatcherTimer();
             updateTimer.Interval = TimeSpan.FromSeconds(5);
             updateTimer.Tick += UpdateTimer_Tick;
-            updateTimer.Start();
-
+            
             Loaded += MainWindow_Loaded;
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateBatteryInfo();
+            await UpdateBatteryInfoAsync();
+            updateTimer.Start();
         }
 
-        private void UpdateTimer_Tick(object sender, EventArgs e)
+        private async void UpdateTimer_Tick(object sender, EventArgs e)
         {
-            UpdateBatteryInfo();
+            await UpdateBatteryInfoAsync();
         }
 
-        private void UpdateBatteryInfo()
+        private async System.Threading.Tasks.Task UpdateBatteryInfoAsync()
         {
-            ManagementScope scope = new ManagementScope(@"\\.\root\wmi");
-
-            // Queries
-            ObjectQuery fullChargeQuery = new ObjectQuery("Select * from BatteryFullChargedCapacity");
-            ObjectQuery designedCapacityQuery = new ObjectQuery("Select * from BatteryStaticData");
-            ObjectQuery statusQuery = new ObjectQuery("Select * from BatteryStatus where Voltage > 0");
-            ObjectQuery cycleCountQuery = new ObjectQuery("Select * from BatteryCycleCount");
-
-            // Searchers
-            ManagementObjectSearcher fullChargeSearcher = new ManagementObjectSearcher(scope, fullChargeQuery);
-            ManagementObjectSearcher designedCapacitySearcher = new ManagementObjectSearcher(scope, designedCapacityQuery);
-            ManagementObjectSearcher statusSearcher = new ManagementObjectSearcher(scope, statusQuery);
-            ManagementObjectSearcher cycleCountSearcher = new ManagementObjectSearcher(scope, cycleCountQuery);
-
-            var fullChargedCapacities = new Dictionary<int, uint>();
-            var designedCapacities = new Dictionary<int, uint>();
-            var cycleCounts = new Dictionary<int, uint>();
+            txtMachineName.Text = $"Machine Name: {Environment.MachineName}";
+            txtCurrentTime.Text = $"Snapshot Time: {DateTime.Now}";
+            
+            // Show loading state if needed, or just wait for update
+            
+            var info = await _batteryService.GetBatteryInfoAsync();
 
             txtBatteryInfo.Inlines.Clear();
 
-            txtMachineName.Text = $"Machine Name: {Environment.MachineName}";
-            txtCurrentTime.Text = $"Snapshot Time: {DateTime.Now}";
-
-            int i = 0;
-            foreach (ManagementObject battery in fullChargeSearcher.Get())
+            if (!string.IsNullOrEmpty(info.ErrorMessage))
             {
-                uint fullChargedCapacity = (uint)battery["FullChargedCapacity"];
-                fullChargedCapacities[i] = fullChargedCapacity;
-                i++;
+                AppendText($"Error retrieving battery info: {info.ErrorMessage}");
+                ResetProgressBars();
+                return;
             }
 
-            i = 0;
-            foreach (ManagementObject battery in designedCapacitySearcher.Get())
+            if (!info.HasBattery || info.Batteries.Count == 0)
             {
-                uint designedCapacity = (uint)battery["DesignedCapacity"];
-                designedCapacities[i] = designedCapacity;
-                i++;
+                AppendText("No battery information available.");
+                ResetProgressBars();
+                return;
             }
 
-            i = 0;
-            foreach (ManagementObject battery in cycleCountSearcher.Get())
+            foreach (var battery in info.Batteries)
             {
-                uint cycleCount = (uint)battery["CycleCount"];
-                cycleCounts[i] = cycleCount;
-                i++;
-            }
+                AppendText($"Battery {battery.Index}\n-----------");
+                AppendKeyValue("Tag", $"Battery {battery.Index}"); // Tag wasn't in my model, using simpler label
+                AppendKeyValue("Name", battery.InstanceName);
+                AppendKeyValue("Power Online", battery.PowerOnline);
+                AppendKeyValue("Discharging", battery.Discharging);
+                AppendKeyValue("Charging", battery.Charging);
+                AppendKeyValue("Voltage", battery.Voltage, "mV");
+                AppendKeyValue("Discharge Rate", battery.DischargeRate, "mW");
+                AppendKeyValue("Charge Rate", battery.ChargeRate, "mW");
+                AppendKeyValue("Remaining Capacity", battery.RemainingCapacity, "mWh");
+                AppendKeyValue("Active", battery.Active);
+                AppendKeyValue("Critical", battery.Critical);
 
-            i = 0;
-            foreach (ManagementObject battery in statusSearcher.Get())
-            {
-                AppendText($"Battery {i}\n-----------");
-                AppendKeyValue("Tag", battery["Tag"]);
-                AppendKeyValue("Name", battery["InstanceName"]);
-                AppendKeyValue("Power Online", battery["PowerOnline"]);
-                AppendKeyValue("Discharging", battery["Discharging"]);
-                AppendKeyValue("Charging", battery["Charging"]);
-                AppendKeyValue("Voltage", battery["Voltage"], "mV");
-                AppendKeyValue("Discharge Rate", battery["DischargeRate"], "mW");
-                AppendKeyValue("Charge Rate", battery["ChargeRate"], "mW");
-                AppendKeyValue("Remaining Capacity", battery["RemainingCapacity"], "mWh");
-                AppendKeyValue("Active", battery["Active"]);
-                AppendKeyValue("Critical", battery["Critical"]);
-
-                if (fullChargedCapacities.ContainsKey(i) && designedCapacities.ContainsKey(i))
+                if (battery.DesignedCapacity > 0)
                 {
-                    uint fullChargedCapacity = fullChargedCapacities[i];
-                    uint designedCapacity = designedCapacities[i];
-                    int health = (int)(100 * fullChargedCapacity / designedCapacity);
+                    int health = battery.HealthPercentage;
                     AppendKeyValue("Battery Health", $"{health}%", "");
 
                     // Update progress bar for battery health
                     progressBarHealth.Value = health;
                     txtHealthPercentage.Text = $"{health}%";
+                    
+                    // Color code health
+                    progressBarHealth.Foreground = GetColorForHealth(health);
+                }
+                else
+                {
+                    AppendKeyValue("Battery Health", "Unknown (Designed Capacity is 0)");
+                }
 
-                    // Calculate and update progress bar for current charge
-                    uint remainingCapacity = (uint)battery["RemainingCapacity"];
-                    int currentChargePercent = (int)(100 * remainingCapacity / fullChargedCapacity);
+                if (battery.FullChargedCapacity > 0)
+                {
+                    int currentChargePercent = battery.ChargePercentage;
+                    
+                    // Update progress bar for current charge
                     progressBarCurrentCharge.Value = currentChargePercent;
                     txtCurrentChargePercentage.Text = $"{currentChargePercent}%";
                 }
 
-                if (cycleCounts.ContainsKey(i))
-                {
-                    AppendKeyValue("Cycle Count", cycleCounts[i]);
-                }
+                AppendKeyValue("Cycle Count", battery.CycleCount);
 
                 AppendText("\n");
-                i++;
             }
+        }
 
-            if (i == 0)
-            {
-                AppendText("No battery information available.");
-            }
+        private void ResetProgressBars()
+        {
+            progressBarHealth.Value = 0;
+            txtHealthPercentage.Text = "N/A";
+            progressBarCurrentCharge.Value = 0;
+            txtCurrentChargePercentage.Text = "N/A";
+        }
+
+        private SolidColorBrush GetColorForHealth(int health)
+        {
+            if (health >= 80) return Brushes.Green;
+            if (health >= 50) return Brushes.Orange;
+            return Brushes.Red;
         }
 
         private void AppendText(string text)
