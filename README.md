@@ -2,7 +2,13 @@
 
 # MangoBattery
 
-I always liked the CoconutBattery app on Mac OS X. The app allows you to see cycle count, battery health as a percentage compared to when it was relatively new, and charge/discharge rate in a nice, clean, simple way. On Windows, the most reliable way to get this information is by running **powercfg /batteryreport** and then inspecting the resulting report. However, sometimes I just want a quick glance at the current battery state without a full report. So, I decided to make an app and call it MangoBattery as a respectful nod to CoconutBattery on Mac OS.
+MangoBattery shows you the battery stats that actually matter — no command line required.
+
+On Mac, CoconutBattery gives you cycle count, health percentage, and charge rates at a glance. Windows doesn't come with anything similar out of the box. The built-in option is running `powercfg /batteryreport` and waiting for a full XML dump, which is fine if you need a detailed analysis but overkill when you just want to check if your battery is holding up.
+
+This app pulls the same WMI data and displays it in a small, simple window. You get current charge, battery health (full charged capacity versus design capacity), cycle count, and whether you're charging, discharging, or plugged in.
+
+There's nothing to configure. Just run it.
 
 ## Screenshot
 ![screenshot](Resources/screenshot.png)
