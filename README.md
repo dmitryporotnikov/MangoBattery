@@ -2,7 +2,7 @@
 
 # MangoBattery
 
-MangoBattery shows you the battery stats that actually matter — no command line required.
+MangoBattery shows you the battery stats that actually matter - no command line required.
 
 On Mac, CoconutBattery gives you cycle count, health percentage, and charge rates at a glance. Windows doesn't come with anything similar out of the box. The built-in option is running `powercfg /batteryreport` to generate a report, which is fine if you need a detailed analysis but overkill when you just want to check if your battery is holding up.
 
