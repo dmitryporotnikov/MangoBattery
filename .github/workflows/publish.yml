@@ -12,20 +12,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v2
-
-    - name: Restore NuGet packages
-      run: nuget restore MangoBattery.sln
-
-    - name: Build
-      run: msbuild MangoBattery.sln /p:Configuration=Release /p:Platform="Any CPU"
+    - name: Publish (self-contained)
+      run: dotnet publish MangoBattery -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MangoBattery-Release
-        path: MangoBattery/bin/Release
+        path: MangoBattery/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
