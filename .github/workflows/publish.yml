@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -20,8 +23,25 @@ jobs:
     - name: Publish (self-contained)
       run: dotnet publish MangoBattery -c Release -p:Platform=x64 -r win-x64 -p:SelfContained=true
 
+    - name: Zip build
+      run: Compress-Archive -Path "MangoBattery/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish/*" -DestinationPath "MangoBattery-win-x64.zip" -Force
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MangoBattery-Release
         path: MangoBattery/bin/x64/Release/net8.0-windows10.0.19041.0/win-x64/publish
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: latest
+        name: Latest build
+        files: MangoBattery-win-x64.zip
+        make_latest: true
+        body: |
+          Portable, self-contained build of MangoBattery for 64-bit Windows.
+
+          Download, unzip, and run MangoBattery.exe - no installation required.
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
