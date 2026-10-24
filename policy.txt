@@ -1,0 +1,115 @@
+MANGOBATTERY PRIVACY POLICY
+Effective date: October 1, 2026
+
+1. Scope and publisher
+
+This policy explains how MangoBattery, published by Dmitry Porotnikov,
+handles information. It applies to the MangoBattery Windows application.
+
+MangoBattery displays battery information on your computer. It does not
+require an account, and its battery-monitoring functionality works offline.
+The app does not send the information it reads to the publisher or to an
+external service.
+
+2. Information accessed on your device
+
+While running, MangoBattery reads information provided by Windows:
+
+- Your computer name, which may contain a personal name or another identifier.
+- Battery instance names or identifiers reported by Windows.
+- Battery charge, remaining capacity, design capacity, full-charge capacity,
+  cycle count, voltage, charge and discharge rates, charging status, power
+  connection status, and battery active or critical status.
+- The local date and time used to label the displayed snapshot.
+- Error details when Windows cannot provide battery information.
+
+The app uses Windows Management Instrumentation (WMI) to read local battery
+data. These queries retrieve records from the BatteryStatus,
+BatteryFullChargedCapacity, BatteryStaticData, and BatteryCycleCount classes.
+Windows may return additional hardware properties as part of those records;
+the app uses the fields needed for the battery display.
+
+This information is processed locally to display current battery statistics,
+calculate charge and health percentages, identify batteries, and explain
+errors. It is not used for advertising, profiling, or identifying users to
+the publisher. MangoBattery does not access your documents, contacts,
+messages, browsing history, precise location, microphone, or camera as part
+of its functionality.
+
+3. Storage, retention, and security
+
+MangoBattery holds the information it reads in application memory while
+running. It does not create a persistent battery history, save these readings
+to files or a database, or maintain a server-side copy. Closing the app stops
+its monitoring and ends its use of this in-memory information.
+
+Local information is subject to Windows security and your device's access
+controls. The app does not provide a separate encrypted data store. Windows
+may independently manage paging, diagnostic records, or crash reports under
+its own settings and policies.
+
+4. Transmission, sharing, and tracking
+
+MangoBattery contains no advertising, analytics, tracking, or app-managed
+crash-reporting service. It does not upload battery readings, computer names,
+or battery identifiers. The publisher does not receive, sell, rent, or share
+those readings through the app. There are no in-app cookies or advertising
+identifiers.
+
+Microsoft independently operates Windows and the Microsoft Store, including
+installation, updates, and any platform diagnostics. This policy does not
+govern Microsoft's handling of information through those services. See the
+Microsoft Privacy Statement: https://privacy.microsoft.com/privacystatement
+
+5. Desktop permission
+
+The Store package declares the runFullTrust capability for its Windows
+desktop execution model and WMI-based battery functionality. This does not
+mean the app requests administrator elevation. MangoBattery uses read-only
+battery queries and does not modify battery or system settings.
+
+6. Your choices and access
+
+You can view the information the app uses in its window. Close the app to
+stop its queries, or uninstall it through Windows Settings to remove it.
+There is no MangoBattery account or stored battery history to delete, and
+no app-level data transmission to opt out of. Uninstalling the app does not
+delete battery information maintained independently by Windows or hardware.
+
+Screenshots can reveal your computer name and battery identifiers. Remove
+these details before sharing a screenshot if you do not want to disclose
+them. The app does not automatically share screenshots.
+
+7. Questions and information you voluntarily provide
+
+For privacy questions, contact Dmitry Porotnikov through the project's issue
+tracker: https://github.com/dmitryporotnikov/MangoBattery/issues
+
+GitHub issues are public. Do not post passwords, sensitive information, or
+unredacted device details. If you choose to submit an issue, the publisher
+can see your GitHub username and the content you provide and will use that
+information to respond to the request or investigate the reported problem.
+It may remain in the issue history until edited or removed, subject to
+GitHub's controls and retention practices. You can request removal of
+information under the publisher's control through the same contact route.
+
+GitHub processes information under its own privacy statement:
+https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
+
+Depending on applicable law, you may have rights to access, correct, or
+delete personal information you voluntarily provide, or to object to or
+restrict its processing. Use the contact route above to make a request
+without publicly posting additional personal information. The publisher
+does not hold a remotely accessible copy of your app's local battery data.
+
+8. Children
+
+The app does not request age information or collect personal information
+from children through an account, advertising, or online tracking. The local
+processing described in this policy applies to all users.
+
+9. Changes to this policy
+
+This policy will be updated if the app's information practices change. The
+effective date above identifies the latest revision. Updated versions will
+be made available through the app's published privacy-policy location.

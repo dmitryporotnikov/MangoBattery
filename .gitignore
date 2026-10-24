@@ -1,5 +1,6 @@
 # Ignore package
 /packages
+/MangoBattery/AppPackages/
 /MangoBatteryPackage/AppPackages/
 /MangoBatteryPackage/bin    
 /MangoBatteryPackage/obj
@@ -56,6 +57,7 @@ StyleCopReport.xml
 *.appxsym
 *.appxrecipe
 *.appxmanifest
+!/MangoBattery/Package.appxmanifest
 *.appxblockmap
 *.appxsignature
 *.appxupload
